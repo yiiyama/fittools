@@ -1,5 +1,5 @@
 TARGET = libFitTools.so
-SRCFILES = src/TFractionFitterSimul.cc src/TemplateChi2Fitter.cc src/IntegralChi2Fitter.cc
+SRCFILES = src/TFractionFitterSimul.cc src/TemplateChi2Fitter.cc src/IntegralChi2Fitter.cc src/EfficiencyFitter.cc
 HDRFILES = $(patsubst src/%.cc,include/%.h,$(SRCFILES))
 ALLSOURCES = $(SRCFILES) src/Dict.cc
 ALLOBJECTS = $(patsubst src/%.cc,obj/%.o,$(ALLSOURCES))
@@ -13,7 +13,7 @@ LIBS = $(shell root-config --libs)
 all: $(TARGET)
 
 clean:
-	rm -rf $(TARGET) obj src/Dict.* > /dev/null 2>&1
+	rm -rf $(TARGET) obj src/Dict.* Dict_rdict.pcm > /dev/null 2>&1
 
 $(TARGET): $(ALLOBJECTS)
 	g++ $(LFLAGS) -o $(TARGET) $(LIBS) $^
@@ -27,4 +27,5 @@ obj/%.o: src/%.cc include/%.h
 	g++ $(CFLAGS) $(EXTRAINC) -o $@ $< $(LIBS)
 
 src/Dict.cc: $(HDRFILES) include/LinkDef.h
-	rootcint -f $@ -c $(EXTRAINC) $^
+	rootcling -f $@ $^
+	mv src/Dict_rdict.pcm .

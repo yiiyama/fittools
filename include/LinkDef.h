@@ -6,4 +6,5 @@
 #pragma link C++ class TFractionFitterSimul;
 #pragma link C++ class TemplateChi2Fitter;
 #pragma link C++ class IntegralChi2Fitter;
+#pragma link C++ class EfficiencyFitter;
 #endif

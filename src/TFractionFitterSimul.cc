@@ -11,8 +11,6 @@
 #include <stdexcept>
 #include <iostream>
 
-extern TVirtualFitter* fractionFitter;
-
 TObjArray TFractionFitterSimul::fgFitters;
 
 ClassImp(TFractionFitterExt)
@@ -250,9 +248,6 @@ TFractionFitterSimul::TFractionFitterSimul(TObjArray const& _dataArray, TObjArra
 
 TFractionFitterSimul::~TFractionFitterSimul()
 {
-  // because TFractionFitter cannot take care of itself
-  delete fractionFitter;
-  fractionFitter = 0;
 }
 
 void
@@ -514,8 +509,9 @@ TFractionFitterSimul::UnConstrain(Int_t _iPar)
   fFitterImp.ExecuteCommand("SET LIMIT", plist, 3);
 }
 
+/*static*/
 void
-TFractionFitterSimul::FCN(Int_t& _npar, Double_t* _gin, Double_t& _f, Double_t* _par, Int_t _flag)
+TFractionFitterSimul::FCN(Int_t& _npar, Double_t*, Double_t& _f, Double_t* _par, Int_t _flag)
 {
   _f = 0.;
 
@@ -525,9 +521,7 @@ TFractionFitterSimul::FCN(Int_t& _npar, Double_t* _gin, Double_t& _f, Double_t* 
 
   for(Int_t iVar(0); iVar != fitters.GetEntries(); ++iVar){
     TFractionFitter* fitter(static_cast<TFractionFitter*>(fitters.At(iVar)));
-    fractionFitter->SetObjectFit(fitter);
 
-    Double_t result(0.);
     if(_flag == 3){
       TString dirName(TString::Format("TFractionFitterSimul_var%d", iVar));
       if(!pwd->cd(dirName)){
@@ -536,7 +530,7 @@ TFractionFitterSimul::FCN(Int_t& _npar, Double_t* _gin, Double_t& _f, Double_t* 
       }
     }
 
-    TFractionFitFCN(_npar, _gin, result, _par, _flag);
+    Double_t result(fitter->EvaluateFCN(_par));
 
     if(_flag == 3) pwd->cd();
 
