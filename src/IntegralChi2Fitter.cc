@@ -250,8 +250,10 @@ IntegralChi2Fitter::fit(int _verbosity/* = 0*/)
   if(_verbosity < 0) fitter->ExecuteCommand("SET NOW", 0, 0);
   else fitter->ExecuteCommand("SET WAR", 0, 0);
 
-  for(unsigned iF(0); iF != params_.size(); ++iF)
-    fitter->SetParameter(iF, params_[iF]->GetName(), params_[iF]->getVal(), 0.01, 0., 0.);
+  for(unsigned iF(0); iF != params_.size(); ++iF) {
+    auto* param(params_[iF]);
+    fitter->SetParameter(iF, param->GetName(), param->getVal(), (param->getMax() - param->getMin()) / 1000., param->getMin(), param->getMax());
+  }
 
   double errdef(1.);
   fitter->ExecuteCommand("SET ERRDEF", &errdef, 1);
